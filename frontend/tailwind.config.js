@@ -7,16 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        'telegram-blue': '#5B9BD5',
-        'telegram-header': '#517DA2',
-        'telegram-green': '#EEFFDE',
-        'telegram-check': '#4CAF50',
-        'chat-bg-start': '#D4E7A5',
-        'chat-bg-end': '#9FCFB2',
+        'tg-header': '#517da2',
+        'tg-input-bg': '#ffffff',
+        'tg-outgoing': '#eeffde',
+        'tg-incoming': '#ffffff',
+        'tg-text': '#000000',
+        'tg-text-secondary': '#6c7883',
+        'tg-time': '#5fb452',
+        'tg-send-btn': '#52a4dc',
       },
-      fontFamily: {
-        'telegram': ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
-      }
     },
   },
   plugins: [],

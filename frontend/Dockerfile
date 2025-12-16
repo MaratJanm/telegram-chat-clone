@@ -1,29 +1,23 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine as build
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
-
-# Install all dependencies (including devDependencies for build tools)
 RUN npm ci
 
 COPY . .
 
-# Set the API URL from environment variable
-ARG VITE_API_URL=http://localhost:8000
+ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
-# Run the build command using npx to ensure Vite is accessible
-RUN npx tsc && npx vite build
+RUN npm run build
 
+# Production stage
 FROM nginx:alpine
 
-# Copy the default nginx configuration
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port specified by Render environment variable
-EXPOSE $PORT
+EXPOSE 80
 
-CMD ["sh", "-c", "nginx -g 'daemon off;'"]
+CMD ["nginx", "-g", "daemon off;"]

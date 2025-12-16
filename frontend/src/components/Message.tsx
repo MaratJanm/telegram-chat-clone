@@ -1,35 +1,65 @@
-import React from 'react';
 import { Message as MessageType } from '../types';
 
 interface MessageProps {
   message: MessageType;
 }
 
-const Message: React.FC<MessageProps> = ({ message }) => {
+function Message({ message }: MessageProps) {
+  const { text, timestamp, is_outgoing } = message;
+
   return (
-    <div className="flex justify-end message-animate">
-      <div className="max-w-[85%] bg-[#EEFFDE] rounded-lg px-3 py-[6px] shadow-sm relative">
-        <div className="flex items-end gap-[6px]">
-          <span className="text-[15px] text-black leading-[1.35] break-words whitespace-pre-wrap">
-            {message.text}
+    <div className={`flex ${is_outgoing ? 'justify-end' : 'justify-start'} mb-[2px]`}>
+      <div
+        className={`
+          relative max-w-[75%] px-[9px] py-[6px] shadow-sm
+          ${is_outgoing 
+            ? 'bg-[#eeffde] rounded-lg rounded-br-[4px]' 
+            : 'bg-white rounded-lg rounded-bl-[4px]'
+          }
+        `}
+        style={{
+          boxShadow: '0 1px 0.5px rgba(0,0,0,0.13)',
+        }}
+      >
+        <p className="text-[15px] text-[#000000] leading-[21px] break-words whitespace-pre-wrap">
+          {text}
+          {/* Invisible spacer for time */}
+          <span className="inline-block w-14"></span>
+        </p>
+        
+        {/* Time and read status */}
+        <span className="absolute bottom-[4px] right-[7px] flex items-center gap-[2px]">
+          <span className="text-[11px] text-[#5fb452]">
+            {timestamp}
           </span>
-          <span className="flex items-center gap-[2px] flex-shrink-0 translate-y-[2px]">
-            <span className="text-[12px] text-[#6DAA5A]">{message.timestamp}</span>
-            {message.is_read && (
-              <svg width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-[1px]">
-                <path d="M1 5.5L4.5 9L11 2" stroke="#4CAF50" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M5 5.5L8.5 9L15 2" stroke="#4CAF50" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            )}
-          </span>
-        </div>
-        {/* Хвостик сообщения */}
-        <div className="absolute -right-[6px] bottom-0 w-3 h-3 overflow-hidden">
-          <div className="absolute w-4 h-4 bg-[#EEFFDE] rotate-45 -translate-x-2 translate-y-1"></div>
-        </div>
+          {is_outgoing && (
+            <svg 
+              width="16" 
+              height="11" 
+              viewBox="0 0 16 11" 
+              fill="none" 
+              className="text-[#5fb452] ml-[1px]"
+            >
+              <path 
+                d="M1 5.5L4.5 9L11 2" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+              <path 
+                d="M5 5.5L8.5 9L15 2" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </span>
       </div>
     </div>
   );
-};
+}
 
 export default Message;

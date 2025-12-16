@@ -2,7 +2,7 @@ import Chat from './components/Chat';
 
 function App() {
   return (
-    <div className="h-screen w-screen bg-gray-100 flex items-center justify-center">
+    <div className="w-full h-full max-w-3xl mx-auto flex flex-col shadow-2xl overflow-hidden">
       <Chat />
     </div>
   );

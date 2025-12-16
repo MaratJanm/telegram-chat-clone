@@ -1,26 +1,22 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Message } from '../types';
+import { getMessages, sendMessage } from '../api';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
-import { Message } from '../types';
-import { getMessages, sendMessage } from '../api/messages';
 
-const Chat: React.FC = () => {
+function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSending, setIsSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchMessages = useCallback(async () => {
     try {
       const data = await getMessages();
       setMessages(data);
-      setError(null);
-    } catch (err) {
-      console.error('Failed to fetch messages:', err);
-      setError('Не удалось загрузить сообщения');
+    } catch (error) {
+      console.error('Error fetching messages:', error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }, []);
 
@@ -28,46 +24,22 @@ const Chat: React.FC = () => {
     fetchMessages();
   }, [fetchMessages]);
 
-  const handleSend = async (text: string) => {
-    if (isSending) return;
-    
-    setIsSending(true);
+  const handleSendMessage = async (text: string) => {
     try {
-      const newMessage = await sendMessage({ text });
+      const newMessage = await sendMessage(text, true);
       setMessages((prev) => [...prev, newMessage]);
-      setError(null);
-    } catch (err) {
-      console.error('Failed to send message:', err);
-      setError('Не удалось отправить сообщение');
-    } finally {
-      setIsSending(false);
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
   };
 
   return (
-    <div className="flex flex-col h-full w-full max-w-lg mx-auto bg-white shadow-xl">
-      <ChatHeader 
-        title="Hustlers Tech Agency" 
-        memberCount={1}
-      />
-      
-      {error && (
-        <div className="px-4 py-2 bg-red-100 text-red-700 text-sm text-center">
-          {error}
-          <button 
-            onClick={() => setError(null)} 
-            className="ml-2 underline hover:no-underline"
-          >
-            Закрыть
-          </button>
-        </div>
-      )}
-      
-      <MessageList messages={messages} isLoading={isLoading} />
-      
-      <MessageInput onSend={handleSend} disabled={isSending} />
+    <div className="flex flex-col h-full">
+      <ChatHeader />
+      <MessageList messages={messages} loading={loading} />
+      <MessageInput onSend={handleSendMessage} />
     </div>
   );
-};
+}
 
 export default Chat;
