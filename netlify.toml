@@ -1,9 +1,0 @@
-[build]
-  base = "frontend"          # Папка с фронтендом
-  command = "npm run build"  # Или "vite build", если в package.json нет скрипта build
-  publish = "dist"           # Папка, которую Netlify будет публиковать
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
