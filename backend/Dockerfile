@@ -7,6 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py .
 
+# Эта строка необязательна
 EXPOSE 10000
 
-CMD ["gunicorn", "main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:$PORT"]
+# КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: используем exec-форму и shell
+CMD exec gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
