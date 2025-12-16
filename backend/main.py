@@ -6,32 +6,34 @@ from datetime import datetime
 from typing import List, Optional
 import uuid
 import os
-import asyncio
-import asyncpg
-
-# Database connection pool
-db_pool: Optional[asyncpg.Pool] = None
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
+# Database connection
+db_conn: Optional[psycopg2.extensions.connection] = None
 
-async def init_db():
-    global db_pool
-    if not DATABASE_URL:
-        print("No DATABASE_URL, running without database")
-        return
-    
-    # Retry connection
-    db_url = DATABASE_URL.replace("postgres://", "postgresql://")
-    
-    for attempt in range(10):
+
+def get_db_connection():
+    global db_conn
+    if db_conn is None or db_conn.closed:
+        if DATABASE_URL:
+            try:
+                db_conn = psycopg2.connect(DATABASE_URL)
+                db_conn.autocommit = True
+            except Exception as e:
+                print(f"Database connection error: {e}")
+                return None
+    return db_conn
+
+
+def init_db():
+    conn = get_db_connection()
+    if conn:
         try:
-            print(f"Connecting to database (attempt {attempt + 1}/10)...")
-            db_pool = await asyncpg.create_pool(db_url, min_size=1, max_size=10)
-            
-            # Create table
-            async with db_pool.acquire() as conn:
-                await conn.execute('''
+            with conn.cursor() as cur:
+                cur.execute('''
                     CREATE TABLE IF NOT EXISTS messages (
                         id UUID PRIMARY KEY,
                         text TEXT NOT NULL,
@@ -40,27 +42,22 @@ async def init_db():
                         created_at TIMESTAMP DEFAULT NOW()
                     )
                 ''')
-            print("Database connected successfully!")
-            return
+            print("Database initialized successfully!")
         except Exception as e:
-            print(f"Database connection failed: {e}")
-            if attempt < 9:
-                await asyncio.sleep(2)
-            else:
-                print("Could not connect to database, running without persistence")
+            print(f"Database init error: {e}")
 
 
-async def close_db():
-    global db_pool
-    if db_pool:
-        await db_pool.close()
+def close_db():
+    global db_conn
+    if db_conn and not db_conn.closed:
+        db_conn.close()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
+    init_db()
     yield
-    await close_db()
+    close_db()
 
 
 app = FastAPI(title="Telegram Chat API", lifespan=lifespan)
@@ -101,27 +98,32 @@ def root():
 
 
 @app.get("/api/messages", response_model=MessagesResponse)
-async def get_messages():
-    if db_pool:
-        async with db_pool.acquire() as conn:
-            rows = await conn.fetch(
-                'SELECT id, text, timestamp, is_outgoing FROM messages ORDER BY created_at ASC'
-            )
-            messages = [
-                {
-                    "id": str(row["id"]),
-                    "text": row["text"],
-                    "timestamp": row["timestamp"],
-                    "is_outgoing": row["is_outgoing"]
-                }
-                for row in rows
-            ]
-            return {"messages": messages}
+def get_messages():
+    conn = get_db_connection()
+    if conn:
+        try:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute(
+                    'SELECT id, text, timestamp, is_outgoing FROM messages ORDER BY created_at ASC'
+                )
+                rows = cur.fetchall()
+                messages = [
+                    {
+                        "id": str(row["id"]),
+                        "text": row["text"],
+                        "timestamp": row["timestamp"],
+                        "is_outgoing": row["is_outgoing"]
+                    }
+                    for row in rows
+                ]
+                return {"messages": messages}
+        except Exception as e:
+            print(f"Error fetching messages: {e}")
     return {"messages": messages_memory}
 
 
 @app.post("/api/messages", response_model=Message)
-async def create_message(message: MessageCreate):
+def create_message(message: MessageCreate):
     if not message.text.strip():
         raise HTTPException(status_code=400, detail="Message text cannot be empty")
     
@@ -132,16 +134,19 @@ async def create_message(message: MessageCreate):
         "is_outgoing": message.is_outgoing
     }
     
-    if db_pool:
-        async with db_pool.acquire() as conn:
-            await conn.execute(
-                '''INSERT INTO messages (id, text, timestamp, is_outgoing) 
-                   VALUES ($1, $2, $3, $4)''',
-                uuid.UUID(new_message["id"]),
-                new_message["text"],
-                new_message["timestamp"],
-                new_message["is_outgoing"]
-            )
+    conn = get_db_connection()
+    if conn:
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    '''INSERT INTO messages (id, text, timestamp, is_outgoing) 
+                       VALUES (%s, %s, %s, %s)''',
+                    (new_message["id"], new_message["text"], 
+                     new_message["timestamp"], new_message["is_outgoing"])
+                )
+        except Exception as e:
+            print(f"Error saving message: {e}")
+            messages_memory.append(new_message)
     else:
         messages_memory.append(new_message)
     
@@ -149,13 +154,16 @@ async def create_message(message: MessageCreate):
 
 
 @app.delete("/api/messages")
-async def clear_messages():
+def clear_messages():
     global messages_memory
-    if db_pool:
-        async with db_pool.acquire() as conn:
-            await conn.execute('DELETE FROM messages')
-    else:
-        messages_memory = []
+    conn = get_db_connection()
+    if conn:
+        try:
+            with conn.cursor() as cur:
+                cur.execute('DELETE FROM messages')
+        except Exception as e:
+            print(f"Error clearing messages: {e}")
+    messages_memory = []
     return {"status": "ok", "message": "All messages cleared"}
 
 
