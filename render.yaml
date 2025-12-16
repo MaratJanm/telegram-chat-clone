@@ -6,7 +6,7 @@ databases:
     region: frankfurt
 
 services:
-  # Backend API (Web Service)
+  # Backend API
   - type: web
     name: telegram-chat-api
     runtime: python
@@ -32,11 +32,11 @@ services:
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
-        value: https://telegram-chat-api.onrender.com
+        value: https://telegram-chat-api-01jm.onrender.com
     routes:
       - type: rewrite
         source: /api/*
-        destination: https://telegram-chat-api.onrender.com/api/*
+        destination: https://telegram-chat-api-01jm.onrender.com/api/*
       - type: rewrite
         source: /*
         destination: /index.html
