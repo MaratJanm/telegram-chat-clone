@@ -18,13 +18,13 @@ telegram-chat/
 │   │   ├── api/
 │   │   │   └── messages.ts # API клиент для работы с сообщениями
 │   │   ├── components/
-│   │   │   ├── Chat.tsx          # Главный компонент чата
-│   │   │   ├── ChatHeader.tsx    # Компонент заголовка чата
-│   │   │   ├── Message.tsx       # Компонент отдельного сообщения
-│   │   │   ├── MessageInput.tsx  # Компонент ввода сообщения
-│   │   │   └── MessageList.tsx   # Компонент списка сообщений
+│   │   │   ├── Chat.tsx         # Главный компонент чата
+│   │   │   ├── ChatHeader.tsx   # Компонент заголовка чата
+│   │   │   ├── Message.tsx      # Компонент отдельного сообщения
+│   │   │   ├── MessageInput.tsx # Компонент ввода сообщения
+│   │   │   └── MessageList.tsx  # Компонент списка сообщений
 │   │   └── types/
-│   │       └── index.ts   # Определения типов TypeScript
+│   │       └── index.ts # Определения типов TypeScript
 │   ├── public/
 │   ├── Dockerfile       # Файл для создания Docker-образа фронтенда
 │   └── nginx.conf       # Конфигурация Nginx для продакшена
@@ -64,3 +64,4 @@ npm run dev
 | GET     | `/api/messages` | Получить все сообщения     |
 | POST    | `/api/messages` | Отправить новое сообщение  |
 | DELETE  | `/api/messages` | Очистить все сообщения     |
+
