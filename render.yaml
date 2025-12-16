@@ -6,7 +6,7 @@ databases:
     region: frankfurt
 
 services:
-  # Backend API
+  # Backend API (Web Service)
   - type: web
     name: telegram-chat-api
     runtime: python
@@ -27,7 +27,7 @@ services:
   - type: static
     name: telegram-chat-frontend
     buildCommand: npm ci && npm run build
-    staticPublishPath: dist
+    publishPath: dist  # Note: Render uses "publishPath" (or "staticPublishPath" in older docs), not "staticPublishPath"
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
