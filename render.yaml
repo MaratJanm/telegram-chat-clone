@@ -24,10 +24,11 @@ services:
           property: connectionString
 
   # Frontend (Static Site)
-  - type: static
+  - type: web
     name: telegram-chat-frontend
+    runtime: static
     buildCommand: npm ci && npm run build
-    publishPath: dist  # Note: Render uses "publishPath" (or "staticPublishPath" in older docs), not "staticPublishPath"
+    staticPublishPath: dist
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
