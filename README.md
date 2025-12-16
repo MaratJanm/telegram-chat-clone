@@ -21,7 +21,6 @@ uvicorn main:app --reload
 ```
 Фронтенд:
 ```bash
-cd ..
 cd frontend
 npm install
 npm run dev
