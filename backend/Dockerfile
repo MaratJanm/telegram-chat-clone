@@ -7,8 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py .
 
-# Эта строка необязательна
-EXPOSE 10000
+# Correct port exposure to match the application
+EXPOSE 8000
 
-# КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: используем exec-форму и shell
+# Use $PORT environment variable for Render.com deployment
 CMD exec gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT

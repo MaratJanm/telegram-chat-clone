@@ -7,6 +7,7 @@ RUN npm ci
 
 COPY . .
 
+# Set the API URL from environment variable
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
