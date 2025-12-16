@@ -6,31 +6,31 @@
 ## Структура проекта
 telegram-chat/
 ├── backend/
-│   ├── main.py          # Основной файл бэкенда с API эндпоинтами
-│   ├── Dockerfile       # Файл для создания Docker-образа бэкенда
-│   └── requirements.txt # Зависимости Python для бэкенда
+│   ├── main.py          # Основной файл бэкенда с API
+│   ├── Dockerfile       # Docker-образ бэкенда
+│   └── requirements.txt # Зависимости Python
 ├── frontend/
 │   ├── src/
-│   │   ├── App.tsx      # Главный компонент React приложения
-│   │   ├── index.css    # Основные стили приложения
-│   │   ├── main.tsx     # Точка входа в React приложение
-│   │   ├── vite-env.d.ts # Определения типов для Vite
+│   │   ├── App.tsx          # Главный компонент React
+│   │   ├── index.css        # Основные стили
+│   │   ├── main.tsx         # Точка входа React
+│   │   ├── vite-env.d.ts    # Типы для Vite
 │   │   ├── api/
-│   │   │   └── messages.ts # API клиент для работы с сообщениями
+│   │   │   └── messages.ts  # API-клиент для сообщений
 │   │   ├── components/
 │   │   │   ├── Chat.tsx         # Главный компонент чата
-│   │   │   ├── ChatHeader.tsx   # Компонент заголовка чата
-│   │   │   ├── Message.tsx      # Компонент отдельного сообщения
-│   │   │   ├── MessageInput.tsx # Компонент ввода сообщения
-│   │   │   └── MessageList.tsx  # Компонент списка сообщений
+│   │   │   ├── ChatHeader.tsx   # Заголовок чата
+│   │   │   ├── Message.tsx      # Одно сообщение
+│   │   │   ├── MessageInput.tsx # Поле ввода сообщения
+│   │   │   └── MessageList.tsx  # Список сообщений
 │   │   └── types/
-│   │       └── index.ts # Определения типов TypeScript
+│   │       └── index.ts     # Типы TypeScript
 │   ├── public/
-│   ├── Dockerfile       # Файл для создания Docker-образа фронтенда
-│   └── nginx.conf       # Конфигурация Nginx для продакшена
-├── docker-compose.yml   # Файл для описания и запуска многоконтейнерных приложений
-├── .env                 # Файл с переменными окружения
-└── README.md            # Этот файл с описанием проекта
+│   ├── Dockerfile           # Docker-образ фронтенда
+│   └── nginx.conf           # Конфиг Nginx для продакшена
+├── docker-compose.yml       # Запуск многоконтейнерного приложения
+├── .env                     # Переменные окружения
+└── README.md                # Описание проекта
 
 
 ## Запуск локально (рекомендуется)
@@ -64,4 +64,5 @@ npm run dev
 | GET     | `/api/messages` | Получить все сообщения     |
 | POST    | `/api/messages` | Отправить новое сообщение  |
 | DELETE  | `/api/messages` | Очистить все сообщения     |
+
 
