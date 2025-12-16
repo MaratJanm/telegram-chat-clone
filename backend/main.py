@@ -11,7 +11,6 @@ from psycopg2.extras import RealDictCursor
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-# Database connection
 db_conn: Optional[psycopg2.extensions.connection] = None
 
 
@@ -71,7 +70,6 @@ app.add_middleware(
 )
 
 
-# Models
 class MessageCreate(BaseModel):
     text: str
     is_outgoing: bool = True
@@ -88,7 +86,6 @@ class MessagesResponse(BaseModel):
     messages: List[Message]
 
 
-# In-memory fallback
 messages_memory: List[dict] = []
 
 
